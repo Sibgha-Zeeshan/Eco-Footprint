@@ -2,6 +2,7 @@ from backend.app.models import User, Achievement, ActivityLog, Goal, EmissionFac
 from backend.app.schemas import TipCreate, ReportCreate, AchievementCreate, UserCreate, ActivityLogCreate, ActivityLogUpdate, GoalCreate, GoalUpdate, EmissionFactorCreate
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
+from backend.app.routers.auth import pwd_context
 
 # -------------------------------------------USER----------------------------------------------------------
 def get_users(db: Session, skip: int = 0, limit: int = 10):
@@ -11,16 +12,28 @@ def get_users(db: Session, skip: int = 0, limit: int = 10):
     except Exception as e:
         raise Exception(f"Error retrieving users: {str(e)}")
     
+# def create_user(db: Session, user: UserCreate):
+#     try:
+#         db_user = User(username=user.username, email=user.email, password=user.password, profile_info=user.profile_info)
+#         db.add(db_user)
+#         db.commit()
+#         db.refresh(db_user)
+#         return {"status": "success", "user": db_user}
+#     except Exception as e:
+#         db.rollback()
+#         raise Exception(f"Error creating user: {str(e)}")
+
 def create_user(db: Session, user: UserCreate):
     try:
         db_user = User(username=user.username, email=user.email, password=user.password, profile_info=user.profile_info)
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
-        return {"status": "success", "user": db_user}
+        return db_user  # Returning the ORM model
     except Exception as e:
         db.rollback()
         raise Exception(f"Error creating user: {str(e)}")
+
 
 def get_user(db: Session, user_id: int):
     try:
@@ -74,6 +87,10 @@ def delete_user(db: Session, user_id: int):
     except Exception as e:
         db.rollback()
         raise Exception(f"Error deleting user: {str(e)}")
+
+# Function added for authentication
+def get_user_by_email(db: Session, email: str):
+    return db.query(User).filter(User.email == email).first()
 
 # ------------------------------------------- ACTIVITY LOG ----------------------------------------------------------
 def create_activity_log(db: Session, activity_log: ActivityLogCreate):

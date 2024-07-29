@@ -10,3 +10,6 @@ uvicorn backend.app.main:app --reload
 # Command to run vite app
 npm run dev
 http://localhost:5173/
+
+# backend:
+http://127.0.0.1:8000

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import Register from "./pages/register";
 import Login from "./pages/login";
+import Home from "./pages/home";
 import theme from "./services/app";
 
 const App = () => (
@@ -11,7 +12,7 @@ const App = () => (
       <CssBaseline />
       <Routes>
         {/* Can use the theme provider here */}
-        {/* <Route path="/" element={<Home />} /> */}
+        <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         {/* <Route path="/profile" element={<Profile />} /> */}

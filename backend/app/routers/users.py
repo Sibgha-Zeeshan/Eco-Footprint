@@ -12,12 +12,21 @@ def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     users = crud.get_users(db=db, skip=skip, limit=limit)
     return users
 
+# @router.post("/", status_code=status.HTTP_201_CREATED)
+# def create_user(user: UserCreate, db: Session = Depends(get_db)):
+#     result = crud.create_user(db=db, user=user)
+#     if isinstance(result, dict) and result.get('status') == 'error':
+#         raise HTTPException(status_code=400, detail=result['message'])
+#     return result
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    result = crud.create_user(db=db, user=user)
-    if isinstance(result, dict) and result.get('status') == 'error':
-        raise HTTPException(status_code=400, detail=result['message'])
-    return result
+    try:
+        new_user = crud.create_user(db=db, user=user)
+        return new_user
+    except ValueError as e:  # Replace with the actual exception type used in crud.create_user
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @router.get("/{user_id}", response_model=UserOut)
 def read_user(user_id: int, db: Session = Depends(get_db)):
@@ -61,3 +70,4 @@ def read_tips(user_id: int, db: Session = Depends(get_db)):
 def read_goal_achievement(user_id: int, db: Session = Depends(get_db)):
     achieved_goals = crud.check_goal_achievement(db, user_id)
     return achieved_goals
+
